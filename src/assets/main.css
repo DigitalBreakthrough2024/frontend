@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@tailwind base;
+@tailwind component;
+@tailwind utilities;
+
+:root {
+  --header-height-desktop: 72px;
+
+  --bg-main: #14191f;
+  --bg-controls: #1c232b;
+
+  --text-secondary: #a7b4c4;
+}
+
+* {
+  font-family: 'Open Sans';
+}
+
+body {
+  background-color: var(--bg-main);
+}
