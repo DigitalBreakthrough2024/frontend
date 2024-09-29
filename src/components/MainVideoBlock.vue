@@ -1,34 +1,37 @@
 <script setup>
-import { ref, computed, onMounted, defineProps } from 'vue'
+import { ref, computed, onMounted } from "vue";
 defineProps({
-  video: {
-    id: string,
-    Name: string,
-    Category: string,
-    Length: string,
-    Date: string,
-    imageUrl: string
-  }
-})()
-const videoName = ref('Примерное название видео на пару слов')
-const videoCategory = ref('Категория')
-const videoPublicDate = ref('4 часа назад')
-const videoLength = ref('')
+  Id: String,
+  Name: String,
+  Category: String,
+  Date: String,
+  Duration: Number,
+  test: String,
+});
 
-const videoPreviews = ['p1.jpg', 'p2.jpg', 'p3.jpg', 'p4.jpg']
-const randomIndex = Math.floor(Math.random() * videoPreviews.length)
-const randomElement = videoPreviews[randomIndex]
+const videoName = ref("Примерное название видео на пару слов");
+const videoCategory = ref("Категория");
+const videoPublicDate = ref("4 часа назад");
+const videoLength = ref("");
 
-const selectedPreviewPath = ref('/src/assets/images/previews/')
-selectedPreviewPath.value = selectedPreviewPath.value + randomElement
+const videoPreviews = ["p1.jpg", "p2.jpg", "p3.jpg", "p4.jpg"];
+const randomIndex = Math.floor(Math.random() * videoPreviews.length);
+const randomElement = videoPreviews[randomIndex];
+
+const selectedPreviewPath = ref("/src/assets/images/previews/");
+selectedPreviewPath.value = selectedPreviewPath.value + randomElement;
 
 function normalizeAndTruncate(str, maxLength) {
-  const trimmedStr = str.trim()
-  if (!trimmedStr) return ''
-  return trimmedStr.length > maxLength ? `${trimmedStr.slice(0, maxLength)}...` : trimmedStr
+  const trimmedStr = str.trim();
+  if (!trimmedStr) return "";
+  return trimmedStr.length > maxLength
+    ? `${trimmedStr.slice(0, maxLength)}...`
+    : trimmedStr;
 }
 
-const truncatedVideoName = computed(() => normalizeAndTruncate(videoName.value, 40))
+const truncatedVideoName = computed(() =>
+  normalizeAndTruncate(videoName.value, 40)
+);
 </script>
 
 <template>
@@ -40,10 +43,10 @@ const truncatedVideoName = computed(() => normalizeAndTruncate(videoName.value, 
       </div>
     </div>
     <div className="videoblock__name">
-      <a className="videoblock__name-header">{{ normalizeAndTruncate(video.Name, 40) }}</a>
+      <a className="videoblock__name-header">{{ Name }}</a>
     </div>
     <div class="videoblock__data">
-      <span>{{ videoCategory }} | {{ videoPublicDate }}</span>
+      <span>{{ Category }} | 5 часов назад</span>
     </div>
   </div>
 </template>

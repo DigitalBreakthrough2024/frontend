@@ -1,13 +1,10 @@
 <script setup>
-import { ref, provide } from 'vue'
-
-const isLeftShown = ref(false)
-
-provide('main', { isLeftShown })
+import { ref, provide, reactive, onMounted } from "vue";
+import axios from "axios";
 </script>
 
 <template>
-  <router-view></router-view>
+  <suspense><router-view></router-view> </suspense>
 </template>
 
 <style scoped></style>

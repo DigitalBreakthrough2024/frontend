@@ -1,43 +1,22 @@
 <script setup>
-import MainVideoBlock from './MainVideoBlock.vue'
+import { ref, computed, onMounted, reactive, watchEffect, watch } from "vue";
+import MainVideoBlock from "./MainVideoBlock.vue";
+import axios from "axios";
+const videos = ref([]);
 
-const videosBack = [
-  {
-    id: '123123123123',
-    Name: 'Примерное название видео на пару слов',
-    Category: 'Для взрослых',
-    Length: '13:55',
-    Date: '4 часа назад'
-  },
-  {
-    id: '456789012345',
-    Name: 'Короткое название',
-    Category: 'Для детей',
-    Length: '05:20',
-    Date: '6 часов назад'
-  },
-  {
-    id: '987654321098',
-    Name: 'Длинное название видео',
-    Category: 'Для взрослых',
-    Length: '02:45',
-    Date: '10 минут назад'
-  },
-  {
-    id: '111222333444',
-    Name: 'Название с цифрами',
-    Category: 'Для всех возрастов',
-    Length: '09:15',
-    Date: '1 час назад'
-  },
-  {
-    id: '111222333444',
-    Name: 'Название с цифрами',
-    Category: 'Для всех возрастов',
-    Length: '09:15',
-    Date: '1 час назад'
+async function fetchVideos() {
+  try {
+    const response = await axios.get("http://localhost/api/videos");
+    videos.value = response.data;
+  } catch (error) {
+    console.error("Ошибка при загрузке видео:", error);
   }
-]
+}
+
+onMounted(() => {
+  fetchVideos();
+});
+await fetchVideos();
 </script>
 
 <template>
@@ -53,15 +32,13 @@ const videosBack = [
       </h2>
       <div className="mainvideos__content-reqvideos">
         <MainVideoBlock
-          v-for="video in videosBack"
-          :key="video.id"
-          :video="{
-            id: video.id,
-            Name: video.Name,
-            Category: video.Category,
-            Length: video.Length,
-            Date: video.Date
-          }"
+          v-for="(video, index) in videos"
+          :key="index"
+          :Id="video.id"
+          :Name="video.name"
+          :Category="video.category"
+          :Date="video.date"
+          :Duration="video.duration"
         />
       </div>
 

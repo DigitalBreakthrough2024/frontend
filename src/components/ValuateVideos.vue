@@ -1,5 +1,69 @@
 <script setup>
-import ValuateVideoBlock from './ValuateVideoBlock.vue'
+import { ref, onMounted } from "vue";
+
+import ValuateVideoBlock from "./ValuateVideoBlock.vue";
+import axios from "axios";
+const videos = ref([]);
+
+let videosSession = localStorage.getItem("apiResponse");
+if (videosSession) {
+  videos.value = JSON.parse(videosSession);
+} else {
+  async function fetchVideos() {
+    try {
+      const response = await axios.get("http://localhost/api/videos");
+      videos.value = response.data;
+    } catch (error) {
+      console.error("Ошибка при загрузке видео:", error);
+    }
+  }
+
+  onMounted(() => {
+    fetchVideos();
+  });
+  await fetchVideos();
+}
+
+async function submit() {
+  const result = [];
+
+  const videoBlocks = document.querySelectorAll(".valuate_videoblock");
+
+  videoBlocks.forEach((block) => {
+    const dataId = block.getAttribute("data-id");
+    const dataState = parseInt(block.getAttribute("data-state"));
+
+    if (dataId && dataState !== null) {
+      result.push({
+        evaluation: dataState,
+        id: `${dataId}`,
+      });
+    }
+  });
+
+  let videoData = JSON.stringify(result, null, 2);
+  try {
+    const response = await fetch("http://localhost:80/api/videos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: videoData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log(result);
+    const successString = JSON.stringify(result, null, 2);
+    localStorage.setItem("apiResponse", successString);
+  } catch (error) {
+    console.error("Error sending data:", error);
+  }
+}
 </script>
 
 <template>
@@ -16,23 +80,24 @@ import ValuateVideoBlock from './ValuateVideoBlock.vue'
         </h1>
 
         <span class="valuatepage_content-text"
-          >Сопроводительный текст, который возможно будет даже иметь какой-либо смысл, когда я его
-          придумаю</span
+          >Сопроводительный текст, который возможно будет даже иметь какой-либо
+          смысл, когда я его придумаю</span
         >
-        <button class="valuatepage-header-submit">Применить оценки</button>
+        <button class="valuatepage-header-submit" @click="submit">
+          <a href="/valuation">Применить оценки</a>
+        </button>
       </div>
 
       <div class="valuatepage__videos">
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
-        <ValuateVideoBlock />
+        <ValuateVideoBlock
+          v-for="(video, index) in videos"
+          :key="index"
+          :Id="video.id"
+          :Name="video.name"
+          :Category="video.category"
+          :Date="video.date"
+          :Duration="video.duration"
+        />
       </div>
 
       <div class="valuatepage__footer">

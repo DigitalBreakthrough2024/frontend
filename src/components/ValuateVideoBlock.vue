@@ -1,48 +1,70 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from "vue";
+defineProps({
+  Id: String,
+  Name: String,
+  Category: String,
+  Date: String,
+  Duration: Number,
+});
 
-const videoName = ref('Примерное название видео на пару слов')
-const videoCategory = ref('Категория')
-const videoPublicDate = ref('4 часа назад')
+const videoName = ref("Примерное название видео на пару слов");
+const videoCategory = ref("Категория");
+const videoPublicDate = ref("4 часа назад");
 
-const videoPreviews = ['p1.jpg', 'p2.jpg', 'p3.jpg', 'p4.jpg']
-const randomIndex = Math.floor(Math.random() * videoPreviews.length)
-const randomElement = videoPreviews[randomIndex]
+const videoPreviews = ["p1.jpg", "p2.jpg", "p3.jpg", "p4.jpg"];
+const randomIndex = Math.floor(Math.random() * videoPreviews.length);
+const randomElement = videoPreviews[randomIndex];
 
-const selectedPreviewPath = ref('/src/assets/images/previews/')
-selectedPreviewPath.value = selectedPreviewPath.value + randomElement
+const selectedPreviewPath = ref("/src/assets/images/previews/");
+selectedPreviewPath.value = selectedPreviewPath.value + randomElement;
 
 function normalizeAndTruncate(str, maxLength) {
-  const trimmedStr = str.trim()
-  if (!trimmedStr) return ''
-  return trimmedStr.length > maxLength ? `${trimmedStr.slice(0, maxLength)}...` : trimmedStr
+  const trimmedStr = str.trim();
+  if (!trimmedStr) return "";
+  return trimmedStr.length > maxLength
+    ? `${trimmedStr.slice(0, maxLength)}...`
+    : trimmedStr;
 }
 
-const truncatedVideoName = computed(() => normalizeAndTruncate(videoName.value, 40))
+const truncatedVideoName = computed(() =>
+  normalizeAndTruncate(videoName.value, 40)
+);
 
-const isLiked = ref(false)
-const isDisliked = ref(false)
-
+const isLiked = ref(false);
+const isDisliked = ref(false);
+const state = ref(0);
 function like() {
-  isLiked.value = !isLiked.value
-  isDisliked.value = false
+  isLiked.value = !isLiked.value;
+  isDisliked.value = false;
+
+  if (isLiked.value && !isDisliked.value) {
+    state.value = 1;
+  } else if (!isLiked && isDisliked.value) {
+    state.value = -1;
+  } else state.value = 0;
 }
 
 function dislike() {
-  isDisliked.value = !isDisliked.value
-  isLiked.value = false
+  isDisliked.value = !isDisliked.value;
+  isLiked.value = false;
+  if (isLiked.value && !isDisliked.value) {
+    state.value = 1;
+  } else if (!isLiked.value && isDisliked.value) {
+    state.value = -1;
+  } else state.value = 0;
 }
 </script>
 
 <template>
-  <div className="valuate_videoblock">
+  <div className="valuate_videoblock" :data-id="Id" :data-state="state">
     <div className="valuate-videoblock__preview">
       <div class="valuate-videoblock__preview-img">
         <img :src="selectedPreviewPath" alt="" />
       </div>
     </div>
     <div className="valuate-videoblock__name">
-      <a className="valuate-videoblock__name-header">{{ truncatedVideoName.trim() }}</a>
+      <a className="valuate-videoblock__name-header">{{ Name }}</a>
     </div>
     <div class="valuate-videoblock__data">
       <span>{{ videoCategory }} | {{ videoPublicDate }}</span>
@@ -56,7 +78,9 @@ function dislike() {
       >
         <img
           :src="
-            isLiked ? '/src/assets/images/liked_button.svg' : '/src/assets/images/like_button.svg'
+            isLiked
+              ? '/src/assets/images/liked_button.svg'
+              : '/src/assets/images/like_button.svg'
           "
           alt=""
         />
